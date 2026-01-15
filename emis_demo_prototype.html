@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>EMIS Demo Prototype</title>
+<style>
+body { font-family: Arial; margin:0; background:#ffffff; }
+.topbar { background:#ffffff; padding:10px; border-bottom:2px solid #eee; }
+button { background:blue; color:white; border:none; padding:8px 12px; margin-right:6px; cursor:pointer; }
+#main { padding:15px; }
+.watermark { opacity:0.08; position:absolute; width:60%; left:20%; top:20%; }
+.flex { display:flex; }
+.left { width:30%; border-right:1px solid #ccc; padding:10px; }
+.right { flex:1; padding:10px; }
+.list-item { cursor:pointer; padding:4px; }
+.list-item:hover { background:#f0f0f0; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+<button onclick="home()">Home</button>
+<button onclick="showSector()">Select Sector</button>
+<button onclick="selectSchool()">Select a school</button>
+<button onclick="addSchool()">Add School</button>
+<button onclick="quit()">Quit</button>
+</div>
+
+<div id="sectorMenu" style="display:none;padding:10px;"></div>
+<div id="main"></div>
+
+<script>
+const LGAs = ["Anka","Bakura","Birnin Magaji","Bukkuyum","Bungudu","Gummi","Gusau","Kaura Namoda","Maradun","Maru","Shinkafi","Talata Mafara","Tsafe","Zurmi"];
+
+const sampleSchools = {
+  "Anka":[{id:"ANK001",name:"Central Primary School"},{id:"ANK002",name:"Government Girls JSS"}],
+  "Gusau":[{id:"GUS001",name:"Science Secondary School"},{id:"GUS002",name:"Model Primary School"}]
+};
+
+let selectedSector = "";
+let selectedSchool = null;
+
+function home(){
+ document.getElementById('sectorMenu').style.display='none';
+ document.getElementById('main').innerHTML=`
+ <h2>Welcome to EMIS Directorate</h2>
+ <img class='watermark' src='logo.png' />
+ `;
+}
+
+function showSector(){
+ const items=[
+"Pre-primary and Primary public schools",
+"Pre-primary and Primary private schools",
+"JSS Private Schools",
+"SSS Private Schools",
+"JSS Public Schools",
+"SSS public schools",
+"Science and Vocational Schools",
+"IQS Islamiya Qur'an Schools"
+ ];
+ let h="";
+ items.forEach(i=>{
+   h+=`<div class='list-item' onclick="chooseSector('${i}')">${i}</div>`;
+ });
+ document.getElementById('sectorMenu').innerHTML=h;
+ document.getElementById('sectorMenu').style.display='block';
+}
+
+function chooseSector(s){ selectedSector=s; alert('Sector selected: '+s); }
+
+function selectSchool(){
+ if(!selectedSector){ alert('Select sector first'); return; }
+ let left="";
+ LGAs.forEach(l=>{
+   left+=`<div class='list-item' onclick="loadSchools('${l}')">${l}</div>`;
+ });
+ document.getElementById('main').innerHTML=`
+ <div class='flex'>
+  <div class='left'>${left}</div>
+  <div class='right'><h3>${selectedSector}</h3><div id='schools'></div></div>
+ </div>`;
+}
+
+function loadSchools(lga){
+ const s = sampleSchools[lga]||[];
+ let h="";
+ s.forEach(x=>{
+   h+=`<div class='list-item' onclick="openSchool('${x.id}','${x.name}')">${x.name} - ${x.id}</div>`;
+ });
+ document.getElementById('schools').innerHTML=h;
+}
+
+function openSchool(id,name){
+ selectedSchool={id,name};
+ document.getElementById('main').innerHTML=`
+ <h3>School Identity</h3>
+ <p>School unique code: ${id}</p>
+ <p>School name: ${name}</p>
+ <p>Street name:</p>
+ <p>Village or town:</p>
+ <button onclick='schoolChar()'>Next</button>`;
+}
+
+function schoolChar(){
+ document.getElementById('main').innerHTML=`
+ <h3>School Characteristics</h3>
+ <p>Year of establishment:</p>
+ <p>Location urban or rural:</p>
+ <p>Level of education:</p>
+ <p>Principal/proprietor name:</p>
+ <p>State: Zamfara</p>
+ <p>LGA:</p>
+ <button onclick='enrol()'>Next</button>`;
+}
+
+function enrol(){
+ document.getElementById('main').innerHTML=`
+ <h3>Enrolment</h3>
+ <button onclick='viewStudents()'>View Students in the school</button>
+ <button onclick='viewResults()'>View students Scores</button>`;
+}
+
+function viewStudents(){
+ document.getElementById('main').innerHTML=`
+ <h3>Students List</h3>
+ <ul><li>Student A</li><li>Student B</li></ul>`;
+}
+
+function viewResults(){
+ document.getElementById('main').innerHTML=`
+ <h3>Results</h3>
+ <table border='1' cellpadding='4'>
+ <tr><th>Name</th><th>1stCA</th><th>2ndCA</th><th>3rdCA</th><th>Exams</th><th>Total</th><th>Position</th></tr>
+ <tr><td>Student A</td><td>10</td><td>10</td><td>10</td><td>60</td><td>90</td><td>1st</td></tr>
+ </table>`;
+}
+
+function addSchool(){ alert('Add school form placeholder'); }
+function quit(){ document.getElementById('main').innerHTML='Goodbye'; }
+
+home();
+</script>
+</body>
+</html>
